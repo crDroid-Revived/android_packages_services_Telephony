@@ -136,6 +136,8 @@ public class EditPhoneNumberPreference extends EditTextPreference
     // button that was clicked on dialog close.
     private int mButtonClicked;
 
+    private boolean mContactPickerEnabled = true;
+
     /**
      * Interface for the dialog closed listener, related to
      * DialogPreference.onDialogClosed(), except we also pass in a buttonClicked
@@ -191,6 +193,13 @@ public class EditPhoneNumberPreference extends EditTextPreference
         this(context, null);
     }
 
+    /**
+     * Sets whether the contact picker button should be enabled and visible.
+     * @param enabled true to enable the contact picker, false to disable and hide it.
+     */
+    public void setContactPickerEnabled(boolean enabled) {
+        mContactPickerEnabled = enabled;
+    }
 
     /*
      * Methods called on UI bindings
@@ -262,13 +271,20 @@ public class EditPhoneNumberPreference extends EditTextPreference
 
         //set contact picker
         if (mContactPickButton != null) {
-            mContactPickButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    if (mParentActivity != null) {
-                        mParentActivity.startActivityForResult(mContactListIntent, mPrefId);
+            if (mContactPickerEnabled) {
+                mContactPickButton.setVisibility(View.VISIBLE);
+                mContactPickButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        if (mParentActivity != null && mContactListIntent != null) {
+                            mParentActivity.startActivityForResult(mContactListIntent, mPrefId);
+                        }
                     }
-                }
-            });
+
+                });
+            } else {
+                mContactPickButton.setVisibility(View.GONE);
+                mContactPickButton.setOnClickListener(null);
+            }
         }
         //set timer settings
         initTimeSettingsView(view);
